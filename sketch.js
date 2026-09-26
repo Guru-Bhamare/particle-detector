@@ -9,12 +9,15 @@ const scannerWidth = 80;
 
 let isEdgeReached = false;
 
-const particleStart = 150;
-const particleWidth = 50;
+const particleOneStart = 150;
+const particleOneWidth = 70;
 
-const FPS = 60;
+const particleTwoStart = 400;
+const particleTwoWidth = 70;
+
 
 function setup() {
+    const FPS = 60;
     r.InitWindow(WIDTH, HEIGHT, "Particle Detector");
     r.SetTargetFPS(FPS);
 }
@@ -28,7 +31,7 @@ function moveScanner() {
 
     scannerX += (!isEdgeReached) ? scannerSpeed : -scannerSpeed;
 
-    const isEndOfWindow = (scannerX + scannerWidth >= WIDTH);
+    const isEndOfWindow = ((scannerX + scannerWidth) >= WIDTH);
     const isStartOfWindow = (scannerX <= 0);
 
     if ((isEndOfWindow || isStartOfWindow)) isEdgeReached = !isEdgeReached;
@@ -42,7 +45,6 @@ function drawParticleField(start, width) {
 function handleOverlap(RangeOneX, RangeOneY, RangeTwoX, RangeTwoY) {
     const isOverlappingParticle = ((RangeOneX <= RangeTwoY) && (RangeTwoX <= RangeOneY))
     scannerColor = isOverlappingParticle ? r.RED : r.WHITE;
-
 }
 
 function draw() {
@@ -51,7 +53,8 @@ function draw() {
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
-    drawParticleField(particleStart, particleWidth);
+    drawParticleField(particleOneStart, particleOneWidth);
+    drawParticleField(particleTwoStart, particleTwoWidth);
 
     r.DrawRectangle(scannerX, scannerY, scannerWidth, HEIGHT, scannerColor);
 
@@ -59,7 +62,21 @@ function draw() {
 }
 
 function update() {
-    handleOverlap(particleStart, (particleStart + particleWidth), scannerX, (scannerX + scannerWidth));
+
+    const scannerEnd = scannerX + scannerWidth;
+    const particleTwoEnd = particleTwoStart + particleTwoWidth;
+    const parcticleOneEnd = particleOneStart + particleOneWidth;
+
+    let particleStart = particleOneStart;
+    let particleEnd = parcticleOneEnd;
+
+    if ((scannerEnd >= particleOneStart) && (scannerEnd >= particleTwoStart)) {
+        particleStart = particleTwoStart;
+        particleEnd = particleTwoEnd;
+    }
+
+    handleOverlap(particleStart, particleEnd, scannerX, scannerEnd);
+
     moveScanner();
 }
 
