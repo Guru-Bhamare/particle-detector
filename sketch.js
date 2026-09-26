@@ -42,8 +42,8 @@ function drawParticleField(start, width) {
     r.DrawRectangle(start, particleFieldY, width, HEIGHT, r.SKYBLUE)
 }
 
-function handleOverlap(RangeOneX, RangeOneY, RangeTwoX, RangeTwoY) {
-    const isOverlappingParticle = ((RangeOneX <= RangeTwoY) && (RangeTwoX <= RangeOneY))
+function handleOverlap(rangeOneX, rangeOneY, rangeTwoX, rangeTwoY) {
+    const isOverlappingParticle = ((rangeOneX <= rangeTwoY) && (rangeTwoX <= rangeOneY))
     scannerColor = isOverlappingParticle ? r.RED : r.WHITE;
 }
 
