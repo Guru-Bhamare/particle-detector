@@ -1,12 +1,12 @@
 const r = require('raylib');
 
-const WIDTH = 700;
+const WIDTH = 701;
 const HEIGHT = 400;
 
 let ScannerX = 0;
-let isEdgeReached = 0;
-
 const ScannerWidth = 40;
+
+let isEdgeReached = false;
 
 const FPS = 60;
 
@@ -20,12 +20,19 @@ function running() {
 }
 
 function moveScanner() {
-    isEdgeReached === 0 ? ScannerX += 2 : ScannerX -= 2;
+    const scannerSpeed = 3;
+    isEdgeReached === false ? ScannerX += scannerSpeed : ScannerX -= scannerSpeed;
 
-    const isEndOfWindow = (WIDTH === ScannerX + ScannerWidth);
-    const isStartOfWindow = (ScannerX === 0);
+    const isEndOfWindow = (ScannerX + ScannerWidth >= WIDTH);
+    const isStartOfWindow = (ScannerX <= 0);
 
-    if ((isEndOfWindow || isStartOfWindow)) isEdgeReached = Number(!isEdgeReached);
+    console.log(isEdgeReached);
+    if ((isEndOfWindow || isStartOfWindow)) isEdgeReached = !(isEdgeReached);
+}
+
+function drawParticleField(start, width) {
+    const particleFieldY = 0;
+    r.DrawRectangle(start, particleFieldY, width, HEIGHT, r.SKYBLUE)
 }
 
 function draw() {
@@ -33,6 +40,7 @@ function draw() {
 
     r.BeginDrawing();
 
+    drawParticleField(100, 50);
 
     r.ClearBackground(r.BLACK)
     r.DrawRectangle(ScannerX, ScannerY, ScannerWidth, HEIGHT, r.WHITE);
