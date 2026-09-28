@@ -20,20 +20,19 @@ function running() {
     return !r.WindowShouldClose();
 }
 
-function isOverlapping(rangeOneStart, rangeOneEnd, rangeTwoStart, rangeTwoEnd) {
+function isParticleOverlapping(rangeOneStart, rangeOneEnd, rangeTwoStart, rangeTwoEnd) {
     const isOverlapInRangeOne = rangeOneStart <= rangeTwoEnd;
     const isOverlapInRangeTwo = rangeTwoStart <= rangeOneEnd;
 
-    const isOverlappingParticle = isOverlapInRangeOne && isOverlapInRangeTwo;
-    return isOverlappingParticle;
+    return isOverlapInRangeOne && isOverlapInRangeTwo;
 }
 
 function isRangeOverlappingDetectorOne(particleStart, particleEnd) {
-    return isOverlapping(particleStart, particleEnd, s1.detectorOneX, s1.detectorOneX + detectorWidth)
+    return isParticleOverlapping(particleStart, particleEnd, s1.detectorOneX, s1.detectorOneX + detectorWidth)
 }
 
 function isRangeOverlappingDetectorTwo(particleStart, particleEnd) {
-    return isOverlapping(particleStart, particleEnd, s2.detectorTwoX, s2.detectorTwoX + detectorWidth)
+    return isParticleOverlapping(particleStart, particleEnd, s2.detectorTwoX, s2.detectorTwoX + detectorWidth)
 }
 
 function update() {
@@ -47,7 +46,7 @@ function update() {
         isRangeOverlappingDetectorTwo(p.particleOneStart, p.particleOneEnd) ||
         isRangeOverlappingDetectorTwo(p.particleOneEnd, p.particleTwoEnd);
 
-    s3.isdetectorThreeOverlapped = isOverlapping(p.particleThreeStart, p.particleThreeEnd, s3.detectorThreeY, s3.detectorThreeY + detectorWidth)
+    s3.isdetectorThreeOverlapped = isParticleOverlapping(p.particleThreeStart, p.particleThreeEnd, s3.detectorThreeY, s3.detectorThreeY + detectorWidth)
 
     s1.detectorOneX = s.moveDetector(s1.detectorOneX, s1.detectorOneVelocity);
     s2.detectorTwoX = s.moveDetector(s2.detectorTwoX, s2.detectorTwoVelocity);
@@ -61,6 +60,7 @@ function update() {
     s1.detectorOneVelocity = s.calculateVelocity(s1.detectorOneX, WIDTH / 2, 0, detectorOneEnd, s1.detectorOneVelocity);
     s2.detectorTwoVelocity = s.calculateVelocity(s2.detectorTwoX, WIDTH, WIDTH / 2, detectorTwoEnd, s2.detectorTwoVelocity);
     s3.detectorThreeVelocity = s.calculateVelocity(s3.detectorThreeY, HEIGHT, 0, detectorThreeEnd, s3.detectorThreeVelocity);
+
 }
 
 function draw() {
@@ -73,9 +73,9 @@ function draw() {
     s.drawHorizontalParticle(p.particleTwoStart, p.particleTwoWidth, HEIGHT);
     s.drawVerticalParticle(p.particleThreeStart, p.particleThreeWidth, WIDTH);
 
-    r.DrawRectangle(s1.detectorOneX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s1.isdetectorOneOverlapped));
-    r.DrawRectangle(s2.detectorTwoX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s2.isdetectorTwoOverlapped));
-    r.DrawRectangle(0, s3.detectorThreeY, WIDTH, detectorWidth, s.changeColor(s3.isdetectorThreeOverlapped));
+    s.drawDetector(s1.detectorOneX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s1.isdetectorOneOverlapped));
+    s.drawDetector(s2.detectorTwoX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s2.isdetectorTwoOverlapped));
+    s.drawDetector(0, s3.detectorThreeY, WIDTH, detectorWidth, s.changeColor(s3.isdetectorThreeOverlapped));
 
     r.EndDrawing();
 }

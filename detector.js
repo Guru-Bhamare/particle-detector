@@ -1,4 +1,5 @@
 const r = require('raylib');
+const { draw } = require('./sketch');
 
 function moveDetector(detectorX, detectorVelocity) {
     detectorX += detectorVelocity;
@@ -28,6 +29,10 @@ function changeColor(isParticleDetected) {
     return isParticleDetected ? r.RED : r.WHITE;
 }
 
+function drawDetector(start, end, width, height, color) {
+    return r.DrawRectangle(start, end, width, height, color);
+}
+
 module.exports = {
-    calculateVelocity, moveDetector, drawHorizontalParticle, drawVerticalParticle, changeColor,
+    calculateVelocity, moveDetector, drawHorizontalParticle, drawVerticalParticle, changeColor, drawDetector,
 }
