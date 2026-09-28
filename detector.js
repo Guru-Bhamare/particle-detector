@@ -8,8 +8,8 @@ function moveDetector(detectorX, detectorVelocity) {
 
 function calculateVelocity(detectorX, endOfWindow, startOfWindow, detectorEnd, detectorVelocity) {
 
-    const isEndOfWindow = detectorEnd >= endOfWindow;
-    const isStartOfWindow = detectorX <= startOfWindow;
+    const isEndOfWindow = detectorEnd > endOfWindow;
+    const isStartOfWindow = detectorX < startOfWindow;
 
     if ((isEndOfWindow || isStartOfWindow)) return -detectorVelocity;
     return detectorVelocity;

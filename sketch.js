@@ -38,6 +38,15 @@ function isRangeOverlappingDetectorTwo(particleStart, particleEnd) {
 function update() {
 
 
+    const detectorOneEnd = s1.detectorOneX + detectorWidth;
+    const detectorTwoEnd = s2.detectorTwoX + detectorWidth;
+    const detectorThreeEnd = s3.detectorThreeY + detectorWidth;
+
+    s1.detectorOneVelocity = s.calculateVelocity(s1.detectorOneX, WIDTH / 2, 0, detectorOneEnd, s1.detectorOneVelocity);
+    s2.detectorTwoVelocity = s.calculateVelocity(s2.detectorTwoX, WIDTH, WIDTH / 2, detectorTwoEnd, s2.detectorTwoVelocity);
+    s3.detectorThreeVelocity = s.calculateVelocity(s3.detectorThreeY, HEIGHT, 0, detectorThreeEnd, s3.detectorThreeVelocity);
+
+
     s1.isdetectorOneOverlapped =
         isRangeOverlappingDetectorOne(p.particleOneStart, p.particleOneEnd) ||
         isRangeOverlappingDetectorOne(p.particleTwoStart, p.particleTwoEnd);
@@ -51,15 +60,6 @@ function update() {
     s1.detectorOneX = s.moveDetector(s1.detectorOneX, s1.detectorOneVelocity);
     s2.detectorTwoX = s.moveDetector(s2.detectorTwoX, s2.detectorTwoVelocity);
     s3.detectorThreeY = s.moveDetector(s3.detectorThreeY, s3.detectorThreeVelocity);
-
-
-    const detectorOneEnd = s1.detectorOneX + detectorWidth;
-    const detectorTwoEnd = s2.detectorTwoX + detectorWidth;
-    const detectorThreeEnd = s3.detectorThreeY + detectorWidth;
-
-    s1.detectorOneVelocity = s.calculateVelocity(s1.detectorOneX, WIDTH / 2, 0, detectorOneEnd, s1.detectorOneVelocity);
-    s2.detectorTwoVelocity = s.calculateVelocity(s2.detectorTwoX, WIDTH, WIDTH / 2, detectorTwoEnd, s2.detectorTwoVelocity);
-    s3.detectorThreeVelocity = s.calculateVelocity(s3.detectorThreeY, HEIGHT, 0, detectorThreeEnd, s3.detectorThreeVelocity);
 
 }
 
