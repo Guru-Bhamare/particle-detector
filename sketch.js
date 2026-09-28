@@ -1,56 +1,23 @@
 const r = require('raylib');
+const s = require('./detector.js')
+const p = require('./particle.js')
+const s1 = require('./s1.js')
+const s2 = require('./s2.js')
+const s3 = require('./s3.js')
 
 const WIDTH = 700;
 const HEIGHT = 400;
-
-let scannerOneX = 0;
-let scannerOneColor = r.WHITE;
-const scannerWidth = 80;
-
-let scannerTwoX = WIDTH - scannerWidth;
-let scannerTwoColor = r.WHITE;
-
-const particleOneStart = 30;
-const particleOneWidth = 70;
-
-const particleTwoStart = 300;
-const particleTwoWidth = 50;
-
-let isEdgeOneReached = false;
-let isEdgeTwoReached = true;
+const detectorWidth = 40;
 
 function setup() {
     const FPS = 60;
     r.InitWindow(WIDTH, HEIGHT, "Particle Detector");
     r.SetTargetFPS(FPS);
+    s2.detectorTwoX = WIDTH / 2;
 }
 
 function running() {
     return !r.WindowShouldClose();
-}
-
-
-function addSpeedInScanner(scannerX, scannerSpeed, endReached) {
-    scannerX += (!endReached) ? scannerSpeed : -scannerSpeed;
-    return scannerX;
-}
-
-function moveScanner(scannerX, endReached, endOfWindow, startOfWindow, scannerEnd) {
-    const isEndOfWindow = scannerEnd >= endOfWindow;
-    const isStartOfWindow = scannerX <= startOfWindow;
-
-    if ((isEndOfWindow || isStartOfWindow)) endReached = !endReached;
-    return endReached;
-}
-
-function drawParticleField(start, width) {
-    const particleFieldY = 0;
-    r.DrawRectangle(start, particleFieldY, width, HEIGHT, r.SKYBLUE)
-}
-
-function changeColor(scannerOne, scannerTwo) {
-    scannerOneColor = scannerOne ? r.RED : r.WHITE;
-    scannerTwoColor = scannerTwo ? r.RED : r.WHITE;
 }
 
 function isOverlapping(rangeOneStart, rangeOneEnd, rangeTwoStart, rangeTwoEnd) {
@@ -61,37 +28,54 @@ function isOverlapping(rangeOneStart, rangeOneEnd, rangeTwoStart, rangeTwoEnd) {
     return isOverlappingParticle;
 }
 
+function isRangeOverlappingDetectorOne(particleStart, particleEnd) {
+    return isOverlapping(particleStart, particleEnd, s1.detectorOneX, s1.detectorOneX + detectorWidth)
+}
+
+function isRangeOverlappingDetectorTwo(particleStart, particleEnd) {
+    return isOverlapping(particleStart, particleEnd, s2.detectorTwoX, s2.detectorTwoX + detectorWidth)
+}
+
 function update() {
 
-    const scannerOneSpeed = 2;
-    const scannerTwoSpeed = 5;
 
-    const particleTwoEnd = particleTwoStart + particleTwoWidth;
-    const particleOneEnd = particleOneStart + particleOneWidth;
+    s1.isdetectorOneOverlapped =
+        isRangeOverlappingDetectorOne(p.particleOneStart, p.particleOneEnd) ||
+        isRangeOverlappingDetectorOne(p.particleTwoStart, p.particleTwoEnd);
 
-    const scannerOne = isOverlapping(particleOneStart, particleOneEnd, scannerOneX, scannerOneX + scannerWidth) || isOverlapping(particleTwoStart, particleTwoEnd, scannerOneX, scannerOneX + scannerWidth)
-    const scannerTwo = isOverlapping(particleOneStart, particleOneEnd, scannerTwoX, scannerTwoX + scannerWidth) || isOverlapping(particleTwoStart, particleTwoEnd, scannerTwoX, scannerTwoX + scannerWidth)
+    s2.isdetectorTwoOverlapped =
+        isRangeOverlappingDetectorTwo(p.particleOneStart, p.particleOneEnd) ||
+        isRangeOverlappingDetectorTwo(p.particleOneEnd, p.particleTwoEnd);
 
-    changeColor(scannerOne, scannerTwo);
+    s3.isdetectorThreeOverlapped = isOverlapping(p.particleThreeStart, p.particleThreeEnd, s3.detectorThreeY, s3.detectorThreeY + detectorWidth)
 
-    scannerOneX = addSpeedInScanner(scannerOneX, scannerOneSpeed, isEdgeOneReached);
-    scannerTwoX = addSpeedInScanner(scannerTwoX, scannerTwoSpeed, isEdgeTwoReached);
+    s1.detectorOneX = s.moveDetector(s1.detectorOneX, s1.detectorOneVelocity);
+    s2.detectorTwoX = s.moveDetector(s2.detectorTwoX, s2.detectorTwoVelocity);
+    s3.detectorThreeY = s.moveDetector(s3.detectorThreeY, s3.detectorThreeVelocity);
 
-    isEdgeOneReached = moveScanner(scannerOneX, isEdgeOneReached, WIDTH / 2, 0, scannerOneX + scannerWidth);
-    isEdgeTwoReached = moveScanner(scannerTwoX, isEdgeTwoReached, WIDTH, WIDTH / 2, scannerTwoX + scannerWidth);
+
+    const detectorOneEnd = s1.detectorOneX + detectorWidth;
+    const detectorTwoEnd = s2.detectorTwoX + detectorWidth;
+    const detectorThreeEnd = s3.detectorThreeY + detectorWidth;
+
+    s1.detectorOneVelocity = s.calculateVelocity(s1.detectorOneX, WIDTH / 2, 0, detectorOneEnd, s1.detectorOneVelocity);
+    s2.detectorTwoVelocity = s.calculateVelocity(s2.detectorTwoX, WIDTH, WIDTH / 2, detectorTwoEnd, s2.detectorTwoVelocity);
+    s3.detectorThreeVelocity = s.calculateVelocity(s3.detectorThreeY, HEIGHT, 0, detectorThreeEnd, s3.detectorThreeVelocity);
 }
 
 function draw() {
-    const scannerOneY = 0;
+    const detectorOneY = 0;
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
-    drawParticleField(particleOneStart, particleOneWidth);
-    drawParticleField(particleTwoStart, particleTwoWidth);
+    s.drawHorizontalParticle(p.particleOneStart, p.particleOneWidth, HEIGHT);
+    s.drawHorizontalParticle(p.particleTwoStart, p.particleTwoWidth, HEIGHT);
+    s.drawVerticalParticle(p.particleThreeStart, p.particleThreeWidth, WIDTH);
 
-    r.DrawRectangle(scannerOneX, scannerOneY, scannerWidth, HEIGHT, scannerOneColor);
-    r.DrawRectangle(scannerTwoX, scannerOneY, scannerWidth, HEIGHT, scannerTwoColor);
+    r.DrawRectangle(s1.detectorOneX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s1.isdetectorOneOverlapped));
+    r.DrawRectangle(s2.detectorTwoX, detectorOneY, detectorWidth, HEIGHT, s.changeColor(s2.isdetectorTwoOverlapped));
+    r.DrawRectangle(0, s3.detectorThreeY, WIDTH, detectorWidth, s.changeColor(s3.isdetectorThreeOverlapped));
 
     r.EndDrawing();
 }
