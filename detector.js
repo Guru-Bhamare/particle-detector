@@ -1,38 +1,43 @@
 const r = require('raylib');
-const { draw } = require('./sketch');
 
-function moveDetector(detectorX, detectorVelocity) {
-    detectorX += detectorVelocity;
-    return detectorX;
+function moveDetector(detector) {
+    detector.detectorVelocity = calculateVelocity(detector);
+    detector.detectorX += detector.detectorVelocity;
+    return detector;
 }
 
-function calculateVelocity(detectorX, endOfWindow, startOfWindow, detectorEnd, detectorVelocity) {
+function calculateVelocity(d) {
+    const detectorEnd = d.detectorX + d.detectorWidth;
+    const isEndOfWindow = detectorEnd > d.end;
+    const isStartOfWindow = d.detectorX < d.start;
 
-    const isEndOfWindow = detectorEnd > endOfWindow;
-    const isStartOfWindow = detectorX < startOfWindow;
-
-    if ((isEndOfWindow || isStartOfWindow)) return -detectorVelocity;
-    return detectorVelocity;
-}
-
-function drawHorizontalParticle(start, width, HEIGHT) {
-    const particleFieldY = 0;
-    r.DrawRectangle(start, particleFieldY, width, HEIGHT, r.SKYBLUE)
-}
-
-function drawVerticalParticle(start, width, WIDTH) {
-    const particleFieldX = 0;
-    r.DrawRectangle(particleFieldX, start, WIDTH, width, r.SKYBLUE)
+    if ((isEndOfWindow || isStartOfWindow)) return -d.detectorVelocity;
+    return d.detectorVelocity;
 }
 
 function changeColor(isParticleDetected) {
     return isParticleDetected ? r.RED : r.WHITE;
 }
 
-function drawDetector(start, end, width, height, color) {
-    return r.DrawRectangle(start, end, width, height, color);
+function drawHorizontalParticle(particle) {
+    const particleFieldY = 0;
+    r.DrawRectangle(particle.particleStart, particleFieldY, particle.particleWidth, particle.particleHeight, r.SKYBLUE)
+    return particle;
+}
+
+function drawVerticalParticle(d) {
+    const particleFieldX = 0;
+    r.DrawRectangle(particleFieldX, d.particleStart, d.particleHeight, d.particleWidth, r.SKYBLUE)
+}
+
+function drawHorizontalDetector(d) {
+    r.DrawRectangle(d.detectorX, d.detectorY, d.detectorWidth, d.detectorHeight, changeColor(d.isdetectorOverlapped));
+}
+
+function drawVerticalDetector(d) {
+    r.DrawRectangle(d.detectorY, d.detectorX, d.detectorHeight, d.detectorWidth, changeColor(d.isdetectorOverlapped))
 }
 
 module.exports = {
-    calculateVelocity, moveDetector, drawHorizontalParticle, drawVerticalParticle, changeColor, drawDetector,
+    calculateVelocity, moveDetector, drawHorizontalParticle, drawVerticalParticle, changeColor, drawHorizontalDetector, drawVerticalDetector,
 }
